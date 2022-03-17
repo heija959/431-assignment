@@ -9,8 +9,6 @@ public class DocParse {
     public static void main(String[] args) throws Exception {
         long startTime = System.nanoTime();
 
-        //File f = new File("wsj.xml");
-        //Scanner s = new Scanner(f,"utf-8"); //.useDelimiter(" ")
         Pattern p = Pattern.compile("\\W*\\s");
         Scanner s = new Scanner(new FileInputStream("wsj.xml"), StandardCharsets.UTF_8).useDelimiter(p);
         int i = 0;
