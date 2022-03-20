@@ -1,3 +1,5 @@
+package DocSearch;
+
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.io.*;
@@ -8,6 +10,8 @@ public class DocParse {
     // Main driver method
     public static void main(String[] args) throws Exception {
         long startTime = System.nanoTime();
+        //Declaring a list of DocObjects
+
 
         Pattern p = Pattern.compile("\\W*\\s");
         Scanner s = new Scanner(new FileInputStream("wsj.xml"), StandardCharsets.UTF_8).useDelimiter(p);
