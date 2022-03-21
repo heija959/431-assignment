@@ -2,8 +2,7 @@ package DocSearch;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class DocParse {
@@ -16,7 +15,7 @@ public class DocParse {
         ArrayList<DocObject> docList = new ArrayList<>();
 
         Pattern p = Pattern.compile("\\W*\\s");
-        Scanner s = new Scanner(new FileInputStream("wsj.xml"), StandardCharsets.UTF_8).useDelimiter(p);
+        Scanner s = new Scanner(new FileInputStream("wsj.small.xml"), StandardCharsets.UTF_8).useDelimiter(p);
         int i = 0;
         int nos = 0;
         int docs = 0;
@@ -78,14 +77,49 @@ public class DocParse {
         System.out.println("Time: "+duration+"ms");
 
         System.out.println("Flatten and invert stage, "+docList.size()+" documents: ");
-        //Map<String, List<Integer>> map = new HashMap<String, List<Integer>>();
+        Map<String, List<Integer>> map = new HashMap<String, List<Integer>>();
+        ArrayList<String> indexToDocNo = new ArrayList<>();
+        ArrayList<Integer> indexToLen = new ArrayList<>();
         for (i = 0; i < docList.size(); i++){
-       //     for (String word:docList.get(i).getUniqueText()){
-       //         if word in
-       //     }
-            ;
+            indexToDocNo.add(docList.get(i).getDOCNO());
+            indexToLen.add(docList.get(i).getDocLength());
+            for (String word:docList.get(i).getUniqueText()){
+                if (map.containsKey(word)){
+                    ArrayList<Integer> temporaryList = (ArrayList<Integer>) map.get(word);
+                    temporaryList.add(i);
+                    map.put(word, temporaryList);
+                }
+                else {
+                    ArrayList<Integer> temporaryList = new ArrayList<>();
+                    temporaryList.add(i);
+                    map.put(word, temporaryList);
+                }
+            }
+        }
+        System.out.println("Traversed");
+        endTime = System.nanoTime();
+        duration = ((endTime - startTime)/1000000);  //divide by 1000000 to get milliseconds.
+        System.out.println("Time: "+duration+"ms");
+
+        System.out.println("Object creation...");
+        IndexObject index = new IndexObject(map, indexToDocNo, indexToLen);
+
+        System.out.println("Saving...");
+
+        try
+        {
+            FileOutputStream fos = new FileOutputStream("index");
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(index);
+            oos.close();
+            fos.close();
+        }
+        catch (IOException ioe)
+        {
+            ioe.printStackTrace();
         }
 
+        System.out.println("Saved.");
         endTime = System.nanoTime();
         duration = ((endTime - startTime)/1000000);  //divide by 1000000 to get milliseconds.
         System.out.println("Time: "+duration+"ms");
