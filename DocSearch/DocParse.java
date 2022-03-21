@@ -1,6 +1,6 @@
 package DocSearch;
 
-import java.io.FileInputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -10,6 +10,7 @@ public class DocParse {
 
     // Main driver method
     public static void main(String[] args) throws Exception {
+        System.out.println("Document stage:");
         long startTime = System.nanoTime();
         //Declaring a list of DocObjects
         ArrayList<DocObject> docList = new ArrayList<>();
@@ -71,8 +72,22 @@ public class DocParse {
         }
         //System.out.println(docList);
 
+
         long endTime = System.nanoTime();
         long duration = ((endTime - startTime)/1000000);  //divide by 1000000 to get milliseconds.
+        System.out.println("Time: "+duration+"ms");
+
+        System.out.println("Flatten and invert stage, "+docList.size()+" documents: ");
+        //Map<String, List<Integer>> map = new HashMap<String, List<Integer>>();
+        for (i = 0; i < docList.size(); i++){
+       //     for (String word:docList.get(i).getUniqueText()){
+       //         if word in
+       //     }
+            ;
+        }
+
+        endTime = System.nanoTime();
+        duration = ((endTime - startTime)/1000000);  //divide by 1000000 to get milliseconds.
         System.out.println("Time: "+duration+"ms");
     }
 }

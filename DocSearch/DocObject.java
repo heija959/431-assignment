@@ -1,15 +1,18 @@
 package DocSearch;
+import java.util.Arrays;
 
-public class DocObject {
+public class DocObject{
     String DOCNO;
     String textContent;
     int textLength;
-
+    String[] uniqueWords;
+    boolean WIPE = true;
 
     public DocObject(String DOCNO, String textContent){
         this.DOCNO = DOCNO;
-        this.textContent = textContent;
         this.textLength = textContent.length();
+        this.textContent = textContent;
+        convertToUniques();
     }
 
     public String toString(){
@@ -21,12 +24,26 @@ public class DocObject {
         return textLength;
     }
 
-    String getTextContent() {
-        return textContent;
+    String[] getUniqueText() {
+        return uniqueWords;
     }
 
     String getDOCNO(){
         return DOCNO;
+    }
+
+    void convertToUniques(){
+
+        // https://stackoverflow.com/questions/13796928/how-to-get-unique-values-from-array ish
+        this.uniqueWords = Arrays.stream(this.textContent.split(" ")).distinct().toArray(String[]::new);
+
+        //
+        if (WIPE){this.textContent = null;} //KEEP THIS RIGHT HERE BRO! Keeps memory careful
+        //
+    }
+
+    void wipe(){
+        this.uniqueWords = null;
     }
 
 }
