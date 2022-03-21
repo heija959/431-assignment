@@ -24,6 +24,7 @@ public class IndexObject implements Serializable {
         return indexToDocNo.get(i);
     }
 
+
     Map<String, List<Integer>> getMap(){
         return map;
     }

@@ -15,7 +15,7 @@ public class DocParse {
         ArrayList<DocObject> docList = new ArrayList<>();
 
         Pattern p = Pattern.compile("\\W*\\s");
-        Scanner s = new Scanner(new FileInputStream("wsj.small.xml"), StandardCharsets.UTF_8).useDelimiter(p);
+        Scanner s = new Scanner(new FileInputStream("wsj.xml"), StandardCharsets.UTF_8).useDelimiter(p);
         int i = 0;
         int nos = 0;
         int docs = 0;
@@ -95,6 +95,7 @@ public class DocParse {
                     map.put(word, temporaryList);
                 }
             }
+            docList.get(i).wipe();
         }
         System.out.println("Traversed");
         endTime = System.nanoTime();
