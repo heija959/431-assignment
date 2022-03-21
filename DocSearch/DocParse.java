@@ -1,8 +1,9 @@
 package DocSearch;
 
+import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.io.*;
+import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class DocParse {
@@ -11,7 +12,7 @@ public class DocParse {
     public static void main(String[] args) throws Exception {
         long startTime = System.nanoTime();
         //Declaring a list of DocObjects
-
+        ArrayList<DocObject> docList = new ArrayList<>();
 
         Pattern p = Pattern.compile("\\W*\\s");
         Scanner s = new Scanner(new FileInputStream("wsj.xml"), StandardCharsets.UTF_8).useDelimiter(p);
@@ -50,9 +51,12 @@ public class DocParse {
                     
                     //System.out.println("Text content: "+textContent);
                 }
+                //System.out.println(test);
                 if (token.equals("</DOC")){
                     //System.out.println("END DOC");
                     //System.out.println("T,D "+docNo+textContent);
+                    DocObject test = new DocObject(docNo, textContent.toString());
+                    docList.add(test);
                     docs++;
                 }
             }
@@ -65,6 +69,7 @@ public class DocParse {
         } else {
             System.out.println("INEQUAL!!");
         }
+        //System.out.println(docList);
 
         long endTime = System.nanoTime();
         long duration = ((endTime - startTime)/1000000);  //divide by 1000000 to get milliseconds.
