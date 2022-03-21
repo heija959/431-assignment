@@ -84,16 +84,15 @@ public class DocParse {
             indexToDocNo.add(docList.get(i).getDOCNO());
             indexToLen.add(docList.get(i).getDocLength());
             for (String word:docList.get(i).getUniqueText()){
+                ArrayList<Integer> temporaryList;
                 if (map.containsKey(word)){
-                    ArrayList<Integer> temporaryList = (ArrayList<Integer>) map.get(word);
-                    temporaryList.add(i);
-                    map.put(word, temporaryList);
+                    temporaryList = (ArrayList<Integer>) map.get(word);
                 }
                 else {
-                    ArrayList<Integer> temporaryList = new ArrayList<>();
-                    temporaryList.add(i);
-                    map.put(word, temporaryList);
+                    temporaryList = new ArrayList<>();
                 }
+                temporaryList.add(i);
+                map.put(word, temporaryList);
             }
             docList.get(i).wipe();
         }
@@ -110,7 +109,7 @@ public class DocParse {
         try
         {
             FileOutputStream fos = new FileOutputStream("index");
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            ObjectOutputStream oos =  new ObjectOutputStream(new BufferedOutputStream(fos));
             oos.writeObject(index);
             oos.close();
             fos.close();
