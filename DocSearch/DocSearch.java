@@ -7,6 +7,8 @@ import java.util.Map;
 //TODO Comments
 //TODO Errors for no indexes and no WSJ
 //TODO Errors for no terms
+//TODO sort keys by length?
+//TODO intersections and ranking
 
 public class DocSearch {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
