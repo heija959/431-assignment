@@ -14,6 +14,10 @@ public class DocSearch {
 
         // Load index and info objects
         index = grabInvertedIndex(Path.of("index"));
+
+        duration = ((System.nanoTime() - startTime) / 1000000);  //divide by 1000000 to get milliseconds.
+        System.out.println("Time: "+duration+"ms");
+
         info = grabInfoIndex(Path.of("info"));
 
         duration = ((System.nanoTime() - startTime) / 1000000);  //divide by 1000000 to get milliseconds.
