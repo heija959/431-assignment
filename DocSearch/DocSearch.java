@@ -31,7 +31,7 @@ public class DocSearch {
             c.printStackTrace();
         }*/
         //System.out.println(index);
-        index = decompressInvertedIndex(Path.of("index")) ;
+        index = decompressInvertedIndex(Path.of("index.gz")) ;
         long endTime = System.nanoTime();
         long duration = ((endTime - startTime) / 1000000);  //divide by 1000000 to get milliseconds.
         System.out.println("Time: "+duration+"ms");
