@@ -2,81 +2,43 @@ package DocSearch;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.Map;
-import java.util.zip.GZIPInputStream;
 
 public class DocSearch {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
-        InvertedIndexObject index = null;
-        IndexObject info = null;
+        // Declare important index objects
+        InvertedIndexObject index;
+        IndexObject info;
+        long duration;
         long startTime = System.nanoTime();
 
-        /*try
-        {
-            FileInputStream fis = new FileInputStream("index");
-            ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(fis));
+        // Load index and info objects
+        index = grabInvertedIndex(Path.of("index"));
+        info = grabInfoIndex(Path.of("info"));
 
-            index = (InvertedIndexObject) ois.readObject();
-
-            ois.close();
-            fis.close();
-        }
-        catch (IOException ioe)
-        {
-            ioe.printStackTrace();
-        }
-        catch (ClassNotFoundException c)
-        {
-            System.out.println("Class not found");
-            c.printStackTrace();
-        }*/
-        //System.out.println(index);
-        index = decompressInvertedIndex(Path.of("index.gz")) ;
-        long endTime = System.nanoTime();
-        long duration = ((endTime - startTime) / 1000000);  //divide by 1000000 to get milliseconds.
+        duration = ((System.nanoTime() - startTime) / 1000000);  //divide by 1000000 to get milliseconds.
         System.out.println("Time: "+duration+"ms");
-        assert index != null;
+
         Map<String, int[]> map = index.getMap();
-        //int[] results = (map.get("Zealand"));
-        long midTime = endTime;
-        endTime = System.nanoTime();
-
-        duration = ((endTime - midTime) / 1000000);
-        System.out.println("Time: "+duration+"ms");
-        /*try
-        {
-            FileInputStream fis = new FileInputStream("info");
-            ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(fis));
-
-            info = (IndexObject) ois.readObject();
-
-            ois.close();
-            fis.close();
-        }
-        catch (IOException | ClassNotFoundException ioe)
-        {
-            ioe.printStackTrace();
-        }
-        //System.out.println("Class not found");
-        */
-        /*
+        int[] results = (map.get("Zealand"));
         for (int i = 0; i < results.length; i++){
             assert info != null;
-            //System.out.println(info.getDOCNO(i));
-        }*/
-        midTime = endTime;
-        endTime = System.nanoTime();
-        duration = ((endTime - midTime) / 1000000);
+            info.getDOCNO(i);
+        }
+
+        duration = ((System.nanoTime() - startTime) / 1000000);  //divide by 1000000 to get milliseconds.
         System.out.println("Time: "+duration+"ms");
 
-
     }
 
-    public static InvertedIndexObject decompressInvertedIndex(Path source) throws IOException, ClassNotFoundException {
-        GZIPInputStream gis = new GZIPInputStream(new BufferedInputStream(new FileInputStream(source.toFile())));
-       ObjectInputStream o = new ObjectInputStream(gis);
-
+    public static InvertedIndexObject grabInvertedIndex(Path source) throws IOException, ClassNotFoundException {
+        ObjectInputStream o = new ObjectInputStream(new BufferedInputStream(new FileInputStream(source.toFile())));
         return (InvertedIndexObject) o.readObject();
-
     }
+
+    public static IndexObject grabInfoIndex(Path source) throws IOException, ClassNotFoundException {
+        ObjectInputStream o = new ObjectInputStream(new BufferedInputStream(new FileInputStream(source.toFile())));
+        return (IndexObject) o.readObject();
+    }
+
 }
