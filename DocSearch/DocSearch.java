@@ -9,6 +9,7 @@ import java.util.Map;
 //TODO Errors for no terms
 //TODO sort keys by length?
 //TODO intersections and ranking
+//TODO methodize refactor clean
 
 public class DocSearch {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -22,7 +23,7 @@ public class DocSearch {
         ArrayList<String> rurlist = new ArrayList<String>();
 
         // Load index and info objects
-        for (int j = 0; j <= 10; j++) {
+        for (int j = 0; j <= 1000; j++) {
             startTime = System.nanoTime();
             index = grabInvertedIndex(Path.of("index"));
 
