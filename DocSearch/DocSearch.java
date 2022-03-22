@@ -8,41 +8,33 @@ public class DocSearch {
 
         // Declare important index objects
         InvertedIndexObject index;
-        IndexObject info;
         long duration;
-        long startTime = System.nanoTime();
+        long startTime;
 
         // Load index and info objects
-        index = grabInvertedIndex(Path.of("index"));
+        for (int j = 0; j <= 1000; j++) {
+            startTime = System.nanoTime();
+            index = grabInvertedIndex(Path.of("index"));
 
-        duration = ((System.nanoTime() - startTime) / 1000000);  //divide by 1000000 to get milliseconds.
-        System.out.println("Time: "+duration+"ms");
+            duration = ((System.nanoTime() - startTime) / 1000000);  //divide by 1000000 to get milliseconds.
+            //System.out.println("Load: " + duration + "ms");
+            System.out.println(duration);
 
-        info = grabInfoIndex(Path.of("info"));
+            Map<String, int[]> map = index.getMap();
+            int[] results = (map.get("Zealand"));
+            for (int i = 0; i < results.length; i++) {
+                index.getDOCNO(i);
+            }
 
-        duration = ((System.nanoTime() - startTime) / 1000000);  //divide by 1000000 to get milliseconds.
-        System.out.println("Time: "+duration+"ms");
-
-        Map<String, int[]> map = index.getMap();
-        int[] results = (map.get("Zealand"));
-        for (int i = 0; i < results.length; i++){
-            assert info != null;
-            info.getDOCNO(i);
+            duration = ((System.nanoTime() - startTime) / 1000000);  //divide by 1000000 to get milliseconds.
+            //System.out.println("Search: " + duration + "ms");
+            index = null;
         }
-
-        duration = ((System.nanoTime() - startTime) / 1000000);  //divide by 1000000 to get milliseconds.
-        System.out.println("Time: "+duration+"ms");
-
     }
 
     public static InvertedIndexObject grabInvertedIndex(Path source) throws IOException, ClassNotFoundException {
         ObjectInputStream o = new ObjectInputStream(new BufferedInputStream(new FileInputStream(source.toFile())));
         return (InvertedIndexObject) o.readObject();
-    }
-
-    public static IndexObject grabInfoIndex(Path source) throws IOException, ClassNotFoundException {
-        ObjectInputStream o = new ObjectInputStream(new BufferedInputStream(new FileInputStream(source.toFile())));
-        return (IndexObject) o.readObject();
     }
 
 }

@@ -108,9 +108,8 @@ public class DocParse {
         }
 
         System.out.println("Object creation...");
-        InvertedIndexObject index = new InvertedIndexObject(convertedmap);
         String[] indexToDocNoConverted = indexToDocNo.toArray(new String[0]);
-        IndexObject info = new IndexObject(indexToDocNoConverted, indexToLen.stream().mapToInt(x->x).toArray());
+        InvertedIndexObject index = new InvertedIndexObject(convertedmap, indexToDocNoConverted, indexToLen.stream().mapToInt(x->x).toArray());
 
         System.out.println("Saving index...");
 
@@ -127,41 +126,7 @@ public class DocParse {
             ioe.printStackTrace();
         }
 
-        try
-        {
-            FileOutputStream fos = new FileOutputStream("indexRaw");
-            ObjectOutputStream oos =  new ObjectOutputStream(new BufferedOutputStream(fos));
-            oos.writeObject(convertedmap);
-            oos.close();
-            fos.close();
-        }
-        catch (IOException ioe)
-        {
-            ioe.printStackTrace();
-        }
-
-        System.out.println("Saved.");
-        endTime = System.nanoTime();
-        duration = ((endTime - startTime)/1000000);  //divide by 1000000 to get milliseconds.
         System.out.println("Time: "+duration+"ms");
-        System.out.println("Saving info...");
 
-        try
-        {
-            FileOutputStream fos = new FileOutputStream("info");
-            ObjectOutputStream oos =  new ObjectOutputStream(new BufferedOutputStream(fos));
-            oos.writeObject(info);
-            oos.close();
-            fos.close();
-        }
-        catch (IOException ioe)
-        {
-            ioe.printStackTrace();
-        }
-
-        System.out.println("Saved.");
-        endTime = System.nanoTime();
-        duration = ((endTime - startTime)/1000000);  //divide by 1000000 to get milliseconds.
-        System.out.println("Time: "+duration+"ms");
     }
 }
