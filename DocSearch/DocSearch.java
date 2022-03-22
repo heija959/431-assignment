@@ -10,6 +10,7 @@ import java.util.Map;
 //TODO sort keys by length?
 //TODO intersections and ranking
 //TODO methodize refactor clean
+//TODO impressively small linecount
 
 public class DocSearch {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
