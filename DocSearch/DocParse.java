@@ -101,16 +101,55 @@ public class DocParse {
         duration = ((endTime - startTime)/1000000);  //divide by 1000000 to get milliseconds.
         System.out.println("Time: "+duration+"ms");
 
-        System.out.println("Object creation...");
-        IndexObject index = new IndexObject(map, indexToDocNo, indexToLen);
+        Map<String, int[]> convertedmap = new HashMap<>();
+        for(String word:map.keySet()){
+            int[] temporaryList = map.get(word).stream().mapToInt(x->x).toArray();
+            convertedmap.put(word, temporaryList);
+        }
 
-        System.out.println("Saving...");
+        System.out.println("Object creation...");
+        InvertedIndexObject index = new InvertedIndexObject(convertedmap);
+        IndexObject info = new IndexObject(indexToDocNo, indexToLen);
+
+        System.out.println("Saving index...");
 
         try
         {
             FileOutputStream fos = new FileOutputStream("index");
             ObjectOutputStream oos =  new ObjectOutputStream(new BufferedOutputStream(fos));
             oos.writeObject(index);
+            oos.close();
+            fos.close();
+        }
+        catch (IOException ioe)
+        {
+            ioe.printStackTrace();
+        }
+
+        try
+        {
+            FileOutputStream fos = new FileOutputStream("indexRaw");
+            ObjectOutputStream oos =  new ObjectOutputStream(new BufferedOutputStream(fos));
+            oos.writeObject(convertedmap);
+            oos.close();
+            fos.close();
+        }
+        catch (IOException ioe)
+        {
+            ioe.printStackTrace();
+        }
+
+        System.out.println("Saved.");
+        endTime = System.nanoTime();
+        duration = ((endTime - startTime)/1000000);  //divide by 1000000 to get milliseconds.
+        System.out.println("Time: "+duration+"ms");
+        System.out.println("Saving info...");
+
+        try
+        {
+            FileOutputStream fos = new FileOutputStream("info");
+            ObjectOutputStream oos =  new ObjectOutputStream(new BufferedOutputStream(fos));
+            oos.writeObject(info);
             oos.close();
             fos.close();
         }
