@@ -3,6 +3,10 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Map;
+//TODO Readme
+//TODO Comments
+//TODO Errors for no indexes and no WSJ
+//TODO Errors for no terms
 
 public class DocSearch {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -12,7 +16,8 @@ public class DocSearch {
         long duration;
         long startTime;
         ArrayList<Long> durlist = new ArrayList<Long>();
-
+        ArrayList<Long> surlist = new ArrayList<Long>();
+        ArrayList<String> rurlist = new ArrayList<String>();
 
         // Load index and info objects
         for (int j = 0; j <= 10; j++) {
@@ -23,18 +28,22 @@ public class DocSearch {
             //System.out.println("Load: " + duration + "ms");
             //System.out.println(duration);
             durlist.add(duration);
-
+            startTime = System.nanoTime();
             Map<String, int[]> map = index.getMap();
-            int[] results = (map.get("Zealand"));
+            int[] results = (map.get("Korea"));
             for (int i = 0; i < results.length; i++) {
-                index.getDOCNO(i);
+                rurlist.add(index.getDOCNO(i));
             }
 
+
             duration = ((System.nanoTime() - startTime) / 1000000);  //divide by 1000000 to get milliseconds.
+            surlist.add(duration);
             //System.out.println("Search: " + duration + "ms");
             index = null;
         }
         System.out.println(durlist);
+        System.out.println(surlist);
+        //System.out.println(rurlist);
     }
 
     public static InvertedIndexObject grabInvertedIndex(Path source) throws IOException, ClassNotFoundException {
