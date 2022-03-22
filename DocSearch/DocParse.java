@@ -109,7 +109,8 @@ public class DocParse {
 
         System.out.println("Object creation...");
         InvertedIndexObject index = new InvertedIndexObject(convertedmap);
-        IndexObject info = new IndexObject(indexToDocNo, indexToLen);
+        String[] indexToDocNoConverted = indexToDocNo.toArray(new String[0]);
+        IndexObject info = new IndexObject(indexToDocNoConverted, indexToLen.stream().mapToInt(x->x).toArray());
 
         System.out.println("Saving index...");
 
