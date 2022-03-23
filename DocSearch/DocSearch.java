@@ -19,9 +19,10 @@ public class DocSearch {
         InvertedIndexObject index;
         long duration;
         long startTime;
-        ArrayList<Long> durlist = new ArrayList<Long>();
-        ArrayList<Long> surlist = new ArrayList<Long>();
-        ArrayList<String> rurlist = new ArrayList<String>();
+        ArrayList<Long> durlist = new ArrayList<>();
+        ArrayList<Long> surlist = new ArrayList<>();
+        //noinspection MismatchedQueryAndUpdateOfCollection
+        ArrayList<String> rurlist = new ArrayList<>();
 
         // Load index and info objects
         for (int j = 0; j <= 1000; j++) {
@@ -43,7 +44,6 @@ public class DocSearch {
             duration = ((System.nanoTime() - startTime) / 1000000);  //divide by 1000000 to get milliseconds.
             surlist.add(duration);
             //System.out.println("Search: " + duration + "ms");
-            index = null;
         }
         System.out.println(durlist);
         System.out.println(surlist);

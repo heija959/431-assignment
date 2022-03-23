@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.Map;
 
 public class InvertedIndexObject implements Serializable {
-    Map<String, int[]> map;
-    String[] indexToDocNo;
-    int[] indexToLen;
+    final Map<String, int[]> map;
+    final String[] indexToDocNo;
+    final int[] indexToLen;
 
     public InvertedIndexObject(Map<String, int[]> map, String[] indexToDocNo, int[] indexToLen){
         this.map = map;
@@ -18,6 +18,7 @@ public class InvertedIndexObject implements Serializable {
         return map;
     }
 
+    @SuppressWarnings("unused")
     int getLen(int i){
         return indexToLen[i];
     }

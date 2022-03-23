@@ -77,7 +77,7 @@ public class DocParse {
         System.out.println("Time: "+duration+"ms");
 
         System.out.println("Flatten and invert stage, "+docList.size()+" documents: ");
-        Map<String, List<Integer>> map = new HashMap<String, List<Integer>>();
+        Map<String, List<Integer>> map = new HashMap<>();
         ArrayList<String> indexToDocNo = new ArrayList<>();
         ArrayList<Integer> indexToLen = new ArrayList<>();
         for (i = 0; i < docList.size(); i++){

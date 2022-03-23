@@ -2,11 +2,11 @@ package DocSearch;
 import java.util.Arrays;
 
 public class DocObject{
-    String DOCNO;
+    final String DOCNO;
     String textContent;
-    int textLength;
+    final int textLength;
     String[] uniqueWords;
-    boolean WIPE = true;
+    final boolean WIPE = true;
 
     public DocObject(String DOCNO, String textContent){
         this.DOCNO = DOCNO;
