@@ -113,8 +113,6 @@ public class DocParse {
                 temporaryList.add(i);
                 map.put(word, temporaryList);
             }
-
-            docList.get(i).wipe();  // Wipe all body text from the document list.
         }
 
         timer("(Indexer) Inverting Time:");
