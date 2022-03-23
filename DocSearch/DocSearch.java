@@ -5,6 +5,12 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class DocSearch {
+
+    void termsToResults(){}
+    void resultsToRanks(){}
+    void nArrayIntersects(){}
+    void arrayIntersections(){}
+
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
         // Declare important index objects
