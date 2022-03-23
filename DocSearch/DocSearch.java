@@ -3,14 +3,6 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Map;
-//TODO Readme
-//TODO Comments
-//TODO Errors for no indexes and no WSJ
-//TODO Errors for no terms
-//TODO sort keys by length?
-//TODO intersections and ranking
-//TODO methodize refactor clean
-//TODO impressively small linecount
 
 public class DocSearch {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
