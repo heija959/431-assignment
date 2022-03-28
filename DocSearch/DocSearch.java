@@ -1,5 +1,10 @@
 package DocSearch;
-import java.io.*;
+
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Map;
@@ -22,8 +27,10 @@ public class DocSearch {
         //noinspection MismatchedQueryAndUpdateOfCollection
         ArrayList<String> rurlist = new ArrayList<>();
 
+
+
         // Load index and info objects
-        for (int j = 0; j <= 0; j++) {
+        for (int j = 0; j <= 40; j++) {
             startTime = System.nanoTime();
             index = grabInvertedIndex(Path.of("index"));
 
@@ -49,8 +56,12 @@ public class DocSearch {
     }
 
     public static InvertedIndexObject grabInvertedIndex(Path source) throws IOException, ClassNotFoundException {
-        ObjectInputStream o = new ObjectInputStream(new BufferedInputStream(new FileInputStream(source.toFile())));
-        return (InvertedIndexObject) o.readObject();
+        Kryo kryo = new Kryo();
+        kryo.register(InvertedIndexObject.class);
+        Input input = new Input(new FileInputStream("index.bin"));
+        InvertedIndexObject output = kryo.readObject(input, InvertedIndexObject.class);
+        input.close();
+        return output;
     }
 
 }

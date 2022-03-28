@@ -1,5 +1,8 @@
 package DocSearch;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Output;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -137,11 +140,18 @@ public class DocParse {
 
         try
         {
+
+            Kryo kryo = new Kryo();
+            kryo.register(InvertedIndexObject.class);
+            Output output = new Output(new FileOutputStream("index.bin"));
+            kryo.writeObject(output, index);
+            output.close();
+            /*
             FileOutputStream fos = new FileOutputStream("index");
             ObjectOutputStream oos =  new ObjectOutputStream(new BufferedOutputStream(fos));
             oos.writeObject(index);
             oos.close();
-            fos.close();
+            fos.close();*/
         }
         catch (IOException ioe)
         {

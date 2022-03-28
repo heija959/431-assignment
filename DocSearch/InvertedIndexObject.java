@@ -26,6 +26,11 @@ public class InvertedIndexObject implements Serializable {
         this.indexToDocNo = indexToDocNo;
         this.indexToLen = indexToLen;
     }
+    public InvertedIndexObject(){
+        this.map = null;
+        this.indexToLen = null;
+        this.indexToDocNo = null;
+    }
 
     /**
      * Accessor function for the map object.
