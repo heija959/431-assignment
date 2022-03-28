@@ -27,6 +27,21 @@ public class DocParse {
         System.out.println(in + " " + duration + "ms");
     }
 
+    public static void writeDisk(InvertedIndexObject index){
+        try
+        {
+            FileOutputStream fos = new FileOutputStream("index");
+            ObjectOutputStream oos =  new ObjectOutputStream(new BufferedOutputStream(fos));
+            oos.writeObject(index);
+            oos.close();
+            fos.close();
+        }
+        catch (IOException ioe)
+        {
+            ioe.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) throws Exception {
 
         System.out.print("(Indexer) Reading XML: ");
@@ -135,18 +150,7 @@ public class DocParse {
 
         System.out.println("(Indexer) Index object saving...");
 
-        try
-        {
-            FileOutputStream fos = new FileOutputStream("index");
-            ObjectOutputStream oos =  new ObjectOutputStream(new BufferedOutputStream(fos));
-            oos.writeObject(index);
-            oos.close();
-            fos.close();
-        }
-        catch (IOException ioe)
-        {
-            ioe.printStackTrace();
-        }
+        writeDisk(index);
 
         timer("(Indexer) Saving Time:");
 
