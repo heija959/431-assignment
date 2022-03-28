@@ -23,7 +23,7 @@ public class DocSearch {
         ArrayList<String> rurlist = new ArrayList<>();
 
         // Load index and info objects
-        for (int j = 0; j <= 1000; j++) {
+        for (int j = 0; j <= 0; j++) {
             startTime = System.nanoTime();
             index = grabInvertedIndex(Path.of("index"));
 
