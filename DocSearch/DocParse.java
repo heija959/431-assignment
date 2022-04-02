@@ -27,10 +27,14 @@ public class DocParse {
         System.out.println(in + " " + duration + "ms");
     }
 
+    public static void getNormal(){
+        ;
+    }
+
     public static void writeDisk(InvertedIndexObject index){
         try
         {
-            FileOutputStream fos = new FileOutputStream("index");
+            FileOutputStream fos = new FileOutputStream("indexNincl");
             ObjectOutputStream oos =  new ObjectOutputStream(new BufferedOutputStream(fos));
             oos.writeObject(index);
             oos.close();
@@ -60,31 +64,35 @@ public class DocParse {
 
         // Reading the entire XML file...
         while(s.hasNext()) {
-            String token = s.next();
+            String token = s.next().toLowerCase(Locale.ROOT).toLowerCase(Locale.ROOT);
             if (token.charAt(0) == '<') {
-                if (token.equals("<DOCNO")){        // Detect <DOCNO> tag.
+                if (token.equals("<docno")){        // Detect <DOCNO> tag.
                     nos++;                          // Increase count of numbers.
                     if (s.hasNext()){
-                        token = s.next();
+                        token = s.next().toLowerCase(Locale.ROOT);
                         docNo = token;              // If there, the next token must be our document number.
                     }
                 }
 
-                if (token.equals("<TEXT")){                     // Detect body text <TEXT> tag.
+                if (token.equals("<hl")){                     // Detect body text <TEXT> tag.
                     textContent = new StringBuilder();
                     while (s.hasNext()){
-                        token = s.next();
-                        if (token.equals("</TEXT")){            // Break if we detect the end of the tag.
+                        token = s.next().toLowerCase(Locale.ROOT);
+                        if (token.equals("</text")){            // Break if we detect the end of the tag.
                             break;
                         }
+                        if (token.charAt(0) == '<') {
+                            continue;
+                        }
                         textContent.append(" ").append(token);  // Append to string our body text until end.
+                        textContent.append(" ").append(docNo);
 
                                                                 // I recognize this includes a leading space.
                                                                 // but this doesn't impact the index, and is easier
                                                                 // to read.
                     }
                 }
-                if (token.equals("</DOC")){                                         // If we're end of document...
+                if (token.equals("</doc")){                                         // If we're end of document...
                     DocObject test = new DocObject(docNo, textContent.toString());
                     docList.add(test);                                              // append a DocObject to our list.
                     docs++;
