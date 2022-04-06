@@ -187,6 +187,42 @@ public class DocParse {
 
         String[] indexToDocNOConverted = indexToDocNO.toArray(new String[0]);
 
+
+        File file = null;
+        PrintWriter pw = null;
+        HashMap<String,Integer> dictionary = new HashMap<>();
+
+        try {
+            pw = new PrintWriter(new FileWriter("check"));
+            List<Integer> data = null;
+            int i = 0;
+
+
+            for(String word:map.keySet()){
+                data = map.get(word);
+                pw.print(data);
+                pw.print("\n");
+                dictionary.put(word, i);
+                i++;
+            }
+
+            pw.close();
+            System.out.println("File writing done.");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pw != null) {
+                    pw.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        writeDisk(dictionary,"dictionary");
+
         timer("(Indexer) Primitives Time:");
 
         System.out.println("(Indexer) Index object creation...");
@@ -201,6 +237,7 @@ public class DocParse {
         writeDisk(indexToDocNOConverted, "docnos");
         writeDisk(indexToLen, "lens");
         writeDisk(convertedmap, "mapA");
+
         //System.out.println(convertedmap.entrySet());
         timer("(Indexer) Saving Time:");
         readDisk(Path.of("index"));
