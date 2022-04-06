@@ -8,22 +8,20 @@ import java.util.Arrays;
  */
 public class DocObject{
 
-    final String DOCNO;
     String textContent;
+    final String docNO;
     final int textLength;
     String[] uniqueWords;
-    final boolean WIPE = true; // Set to false if you don't want to wipe the bodytext afterwards.
+    final boolean WIPE = false; // Set to false if you don't want to wipe the bodytext afterwards.
 
     /**
      * DocObject constructor that takes the DocObject's WSJ-XXXXXX-YYYY identifier and body text.
      * Body text is converted to all available unique words, and wiped depending on the value of WIPE.
      *
-     * @param DOCNO         WSJ-XXXXXX-YYYY identifier.
-     * @param textContent   Body text of the document
      */
-    public DocObject(String DOCNO, String textContent){
-        this.DOCNO = DOCNO;
-        this.textLength = textContent.length();
+    public DocObject(String textContent, String docNO){
+        this.docNO = docNO;
+        this.textLength = textContent.length()-1;
         this.textContent = textContent;
         convertToUniques();
     }
@@ -34,7 +32,7 @@ public class DocObject{
      * @return  DOCNO
      */
     public String toString(){
-        return DOCNO;
+        return textContent;
     }
 
     /**
@@ -45,6 +43,7 @@ public class DocObject{
     int getDocLength() {
         return textLength;
     }
+    String getDocNO() { return docNO; }
 
     /**
      * Accessor for unique words in document's body text.
@@ -53,15 +52,6 @@ public class DocObject{
      */
     String[] getUniqueText() {
         return uniqueWords;
-    }
-
-    /**
-     * Accessor for the document's WSJ-XXXXXX-YYYY identifier.
-     *
-     * @return WSJ-XXXXXX-YYYY identifier.
-     */
-    String getDOCNO(){
-        return DOCNO;
     }
 
     /**

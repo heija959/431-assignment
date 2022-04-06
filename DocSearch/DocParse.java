@@ -2,8 +2,12 @@ package DocSearch;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Parses a specific XML document into an inverted index to be stored on disk as an InvertedIndexObject
@@ -27,16 +31,22 @@ public class DocParse {
         System.out.println(in + " " + duration + "ms");
     }
 
-    public static void getNormal(){
-        ;
+    public static String convertWithStream(Map<String, int[]> map) {
+        String mapAsString = map.keySet().stream()
+                .map(key -> key + "=" + map.get(key))
+                .collect(Collectors.joining(", ", "{", "}"));
+        return mapAsString;
     }
 
-    public static void writeDisk(InvertedIndexObject index){
+    public static void getNormal(){
+    }
+
+    public static void writeDisk(Object obj, String fname){
         try
         {
-            FileOutputStream fos = new FileOutputStream("indexNincl");
+            FileOutputStream fos = new FileOutputStream(fname);
             ObjectOutputStream oos =  new ObjectOutputStream(new BufferedOutputStream(fos));
-            oos.writeObject(index);
+            oos.writeObject(obj);
             oos.close();
             fos.close();
         }
@@ -44,6 +54,33 @@ public class DocParse {
         {
             ioe.printStackTrace();
         }
+    }
+
+    public static Object readDisk(Path source) throws IOException, ClassNotFoundException {
+        ObjectInputStream o = new ObjectInputStream(new BufferedInputStream(new FileInputStream(source.toFile())));
+        return o.readObject();
+    }
+
+    public static byte[] compressObject(Object obj) throws IOException {
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        GZIPOutputStream gzipOut = new GZIPOutputStream(baos);
+        ObjectOutputStream objectOut = new ObjectOutputStream(gzipOut);
+        objectOut.writeObject(obj);
+        objectOut.close();
+        gzipOut.finish();
+
+        return baos.toByteArray();
+    }
+
+    public static Object decompressObject(byte[] obj) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream bais = new ByteArrayInputStream(obj);
+        GZIPInputStream gzipIn = new GZIPInputStream(bais);
+        ObjectInputStream objectIn = new ObjectInputStream(gzipIn);
+        Object obju = (Object) objectIn.readObject();
+        objectIn.close();
+
+        return obju;
     }
 
     public static void main(String[] args) throws Exception {
@@ -67,15 +104,16 @@ public class DocParse {
             String token = s.next().toLowerCase(Locale.ROOT).toLowerCase(Locale.ROOT);
             if (token.charAt(0) == '<') {
                 if (token.equals("<docno")){        // Detect <DOCNO> tag.
+                    textContent = new StringBuilder();
                     nos++;                          // Increase count of numbers.
                     if (s.hasNext()){
                         token = s.next().toLowerCase(Locale.ROOT);
                         docNo = token;              // If there, the next token must be our document number.
+                        textContent.append(docNo);
                     }
                 }
 
                 if (token.equals("<hl")){                     // Detect body text <TEXT> tag.
-                    textContent = new StringBuilder();
                     while (s.hasNext()){
                         token = s.next().toLowerCase(Locale.ROOT);
                         if (token.equals("</text")){            // Break if we detect the end of the tag.
@@ -85,7 +123,6 @@ public class DocParse {
                             continue;
                         }
                         textContent.append(" ").append(token);  // Append to string our body text until end.
-                        textContent.append(" ").append(docNo);
 
                                                                 // I recognize this includes a leading space.
                                                                 // but this doesn't impact the index, and is easier
@@ -93,7 +130,7 @@ public class DocParse {
                     }
                 }
                 if (token.equals("</doc")){                                         // If we're end of document...
-                    DocObject test = new DocObject(docNo, textContent.toString());
+                    DocObject test = new DocObject(textContent.toString(),docNo);
                     docList.add(test);                                              // append a DocObject to our list.
                     docs++;
                 }
@@ -111,15 +148,15 @@ public class DocParse {
 
         // Declare variables for inversion process.
         Map<String, List<Integer>> map = new HashMap<>();
-        ArrayList<String> indexToDocNo = new ArrayList<>();
         ArrayList<Integer> indexToLen = new ArrayList<>();
+        ArrayList<String> indexToDocNO = new ArrayList<>();
 
         // For every document...
         for (int i = 0; i < docList.size(); i++){
 
             // ...add the doc number and length to our list.
-            indexToDocNo.add(docList.get(i).getDOCNO());
             indexToLen.add(docList.get(i).getDocLength());
+            indexToDocNO.add(docList.get(i).getDocNO());
 
             // For all unique strings in the body text of docs...
             for (String word:docList.get(i).getUniqueText()){
@@ -142,25 +179,36 @@ public class DocParse {
 
         System.out.println("(Indexer) Convert to primitives...");  // ...because it's better for storage
 
-        Map<String, int[]> convertedmap = new HashMap<>();
+        LinkedHashMap<String, int[]> convertedmap = new LinkedHashMap<>();
         for(String word:map.keySet()){
             int[] temporaryList = map.get(word).stream().mapToInt(x->x).toArray();
             convertedmap.put(word, temporaryList);
         }
+
+        String[] indexToDocNOConverted = indexToDocNO.toArray(new String[0]);
 
         timer("(Indexer) Primitives Time:");
 
         System.out.println("(Indexer) Index object creation...");
 
         // Create the InvertedIndexObject to prepare for saving, from our other objects.
-        String[] indexToDocNoConverted = indexToDocNo.toArray(new String[0]);
-        InvertedIndexObject index = new InvertedIndexObject(convertedmap, indexToDocNoConverted, indexToLen.stream().mapToInt(x->x).toArray());
+        InvertedIndexObject index = new InvertedIndexObject(convertedmap, indexToLen.stream().mapToInt(x->x).toArray(), indexToDocNOConverted);
 
         System.out.println("(Indexer) Index object saving...");
 
-        writeDisk(index);
-
+        writeDisk(index, "index");
+        writeDisk(compressObject(index),"indexc");
+        writeDisk(indexToDocNOConverted, "docnos");
+        writeDisk(indexToLen, "lens");
+        writeDisk(convertedmap, "mapA");
+        //System.out.println(convertedmap.entrySet());
         timer("(Indexer) Saving Time:");
+        readDisk(Path.of("index"));
+        timer("(Indexer) Re-read Time:");
+        readDisk(Path.of("indexc"));
+        timer("(Indexer) Re-read Time C:");
+
+
 
     }
 }

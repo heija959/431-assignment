@@ -11,20 +11,19 @@ import java.util.Map;
 public class InvertedIndexObject implements Serializable {
 
     final Map<String, int[]> map;
-    final String[] indexToDocNo;
     final int[] indexToLen;
+    final String[] indexToDocNO;
 
     /**
      * InvertedIndexObject constructor that sets input variables to class variables.
-     *
      * @param map          HashMap/Map of words correspondent to their index positions in the document number array.
-     * @param indexToDocNo Document number array storing the WSJ-XXXXXX-YYYY identifier.
      * @param indexToLen   Array storing the length of the body text of the document.
+     * @param indexToDocNO
      */
-    public InvertedIndexObject(Map<String, int[]> map, String[] indexToDocNo, int[] indexToLen) {
+    public InvertedIndexObject(Map<String, int[]> map, int[] indexToLen, String[] indexToDocNO) {
         this.map = map;
-        this.indexToDocNo = indexToDocNo;
         this.indexToLen = indexToLen;
+        this.indexToDocNO = indexToDocNO;
     }
 
     /**
@@ -46,13 +45,9 @@ public class InvertedIndexObject implements Serializable {
         return indexToLen[i];
     }
 
-    /**
-     * Accessor function for the document number (WSJ-XXXXXX-YYYY identifier).
-     *
-     * @return Document number array.
-     */
-    String getDOCNO(int i) {
-        return indexToDocNo[i];
-    }
+    String getDocNO(int i) { return indexToDocNO[i]; }
+
+
+
 
 }
