@@ -5,7 +5,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -29,14 +28,47 @@ public class DocParse {
         long endTime = System.nanoTime();
         long duration = ((endTime - startTime)/1000000);
         System.out.println(in + " " + duration + "ms");
+        startTime = System.nanoTime();
     }
 
-    public static String convertWithStream(Map<String, int[]> map) {
-        String mapAsString = map.keySet().stream()
-                .map(key -> key + "=" + map.get(key))
-                .collect(Collectors.joining(", ", "{", "}"));
-        return mapAsString;
+    public static int[] primint(List<Integer> obj){
+        return obj.stream().mapToInt(i->i).toArray();
     }
+
+    public static int[] doDgap(List<Integer> obj){
+        int[] in = obj.stream().mapToInt(i->i).toArray();
+        int last = 0;
+        int[] out = new int[in.length];
+
+        for(int i = 0; i < in.length; i++) {
+            int j = in[i];
+            out[i] = j-last;
+            last=j;
+        }
+
+        return out;
+    }
+
+    public static int[] undies(int[] obj){
+
+        int[] back = new int[obj.length];
+        int last=0;
+        for(int i = 0; i < obj.length; i++) {
+            int j = obj[i];
+            back[i] = j+last;
+            last=back[i];
+        }
+        return back;
+    }
+
+    public static byte[] castToByteArray(Object in) throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        oos.writeObject(in);
+        oos.flush();
+        return bos.toByteArray();
+    }
+
 
     public static void getNormal(){
     }
@@ -92,7 +124,7 @@ public class DocParse {
 
         // Read all documents and delimit by words-ish
         Pattern p = Pattern.compile("\\W*\\s");
-        Scanner s = new Scanner(new FileInputStream("wsj.xml"), StandardCharsets.UTF_8).useDelimiter(p);
+        Scanner s = new Scanner(new FileInputStream("wsj.small.xml"), StandardCharsets.UTF_8).useDelimiter(p);
 
         // Declare variables used in the following loop to store counts of documents, docnumbers, and body text.
         int nos = 0, docs = 0;
@@ -190,23 +222,35 @@ public class DocParse {
 
         File file = null;
         PrintWriter pw = null;
-        HashMap<String,Integer> dictionary = new HashMap<>();
+        HashMap<String,Integer[]> dictionary = new HashMap<>();
 
         try {
-            pw = new PrintWriter(new FileWriter("check"));
-            List<Integer> data = null;
-            int i = 0;
+            List<byte[]> byteList = new ArrayList<byte[]>();
+            int offset = 0;
+            byte[] data;
 
 
             for(String word:map.keySet()){
-                data = map.get(word);
-                pw.print(data);
-                pw.print("\n");
-                dictionary.put(word, i);
-                i++;
+                //System.out.println(Arrays.toString(doDgap(map.get(word))));
+                //.out.println(Arrays.toString(undies(doDgap(map.get(word)))));
+                data = castToByteArray(primint((map.get(word))));
+                byteList.add(data);
+
+                //for all in bytelist total length of each and compand into 1d array for writing? dual offset shit????
+                dictionary.put(word, new Integer[]{offset, data.length});
+                offset+=data.length;
             }
 
-            pw.close();
+
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(
+                    "checkbytes"));
+            out.writeObject(byteList);
+            writeDisk(byteList.toArray(),"checkbytesX");
+
+
+            System.out.println(offset);
+            System.out.println(byteList.size());
+            //System.out.println(dictionary);
             System.out.println("File writing done.");
         }
         catch (Exception e) {

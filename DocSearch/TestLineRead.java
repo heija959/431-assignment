@@ -38,11 +38,11 @@ public class TestLineRead {
         ObjectInputStream o = new ObjectInputStream(new BufferedInputStream(new FileInputStream(source.toFile())));
         return o.readObject();
     }
-
+    /*
     public static String readLine(String source, int linetarget){
         String output = null;
 
-        try (Stream<String> lines = Files.lines(Paths.get(source))) {
+        try (Stream<String> lines = Files.lines((Files.newBufferedReader(Path.of(source))))) {
             output = lines.skip(linetarget).findFirst().get();
         } catch (IOException e) {
             System.out.println(e);
@@ -50,14 +50,14 @@ public class TestLineRead {
 
         return output;
     }
-
+    */
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         timer("From cold");
         int n = 4500; // The line number
         int n2 = 13000;
         int n3 = 12;
         String line;
-
+    /*
         readLine("check", 796002);
         timer("From File.lines: ");
         readLine("check", 40);
@@ -79,7 +79,7 @@ public class TestLineRead {
         readLine("check", 17010);
         timer("From File.lines: ");
 
-
+*/
         readDisk(Path.of("dictionary"));
         timer("From serial");
     }
