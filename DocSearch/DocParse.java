@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -227,6 +228,7 @@ public class DocParse {
         try {
             List<byte[]> byteList = new ArrayList<byte[]>();
             int offset = 0;
+            int machinelength = 0;
             byte[] data;
 
 
@@ -235,17 +237,31 @@ public class DocParse {
                 //.out.println(Arrays.toString(undies(doDgap(map.get(word)))));
                 data = castToByteArray(primint((map.get(word))));
                 byteList.add(data);
+                machinelength += data.length;
 
                 //for all in bytelist total length of each and compand into 1d array for writing? dual offset shit????
                 dictionary.put(word, new Integer[]{offset, data.length});
                 offset+=data.length;
             }
+            byte[] data2 = new byte[machinelength];
+            int pos = 0;
+            for(byte[] bytes:byteList){
+                for (int i = 0; i<bytes.length; i++){
+                    data2[i] = bytes[i];
+                    pos++;
+                }
+            }
+            writeDisk(data2,"newBytes");
+            System.out.println("sheesh "+ data2.length);
+            System.out.println(offset);
+            System.out.println("oi " + machinelength);
+            System.out.println(byteList.size());
 
 
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(
-                    "checkbytes"));
+                    "checkbytes2"));
             out.writeObject(byteList);
-            writeDisk(byteList.toArray(),"checkbytesX");
+            writeDisk(byteList.toArray(),"checkbytesX2");
 
 
             System.out.println(offset);

@@ -28,7 +28,7 @@ public class TestByteReads {
         }
 
         assert f != null;
-        f.seek((long) pos);
+        f.seek(pos);
         byte[] raw = new byte[len];
         for (int i = 0; i<len; i++){
             raw[i] = f.readByte();
@@ -46,9 +46,19 @@ public class TestByteReads {
         HashMap<String, Integer[]> dictionary;
 
         dictionary = (HashMap<String, Integer[]>) readDisk(Path.of("dictionary"));
-        System.out.println(dictionary);
+        //System.out.println(dictionary);
         System.out.println((Arrays.toString(dictionary.get("near"))));
-        System.out.println(Arrays.toString(readObjectPortion("checkbytesC", dictionary.get("near")[POS]+29, dictionary.get("near")[LEN])));
+        System.out.println(dictionary.keySet());
+        for(Integer[] i: dictionary.values()){
+            System.out.print(i[0]+" ");
+        }
+        System.out.println();
+        for(Integer[] i: dictionary.values()){
+            System.out.print(i[1]+" ");
+        }
+        System.out.println();
+        //System.out.println(dictionary.values());
+        System.out.println(Arrays.toString(readObjectPortion("newBytes", 381, 32)));
 
     }
 }
