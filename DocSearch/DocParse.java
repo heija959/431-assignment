@@ -6,8 +6,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 /**
  * Parses a specific XML document into an inverted index to be stored on disk as an InvertedIndexObject
@@ -29,13 +27,34 @@ public class DocParse {
         long endTime = System.nanoTime();
         long duration = ((endTime - startTime)/1000000);
         System.out.println(in + " " + duration + "ms");
+        startTime = System.nanoTime();
     }
 
-    public static String convertWithStream(Map<String, int[]> map) {
-        String mapAsString = map.keySet().stream()
-                .map(key -> key + "=" + map.get(key))
-                .collect(Collectors.joining(", ", "{", "}"));
-        return mapAsString;
+    public static int[] dogap(int[] obj){
+        int[] in = Arrays.stream(obj).boxed().toList().stream().mapToInt(i->i).toArray();
+
+        int last = 0;
+        int[] out = new int[in.length];
+
+        for(int i = 0; i < in.length; i++) {
+            int j = in[i];
+            out[i] = j-last;
+            last=j;
+        }
+
+        return in;
+    }
+
+    public static int[] ungap(int[] obj){
+
+        int[] back = new int[obj.length];
+        int last=0;
+        for(int i = 0; i < obj.length; i++) {
+            int j = obj[i];
+            back[i] = j+last;
+            last=back[i];
+        }
+        return back;
     }
 
     public static void getNormal(){
@@ -59,28 +78,6 @@ public class DocParse {
     public static Object readDisk(Path source) throws IOException, ClassNotFoundException {
         ObjectInputStream o = new ObjectInputStream(new BufferedInputStream(new FileInputStream(source.toFile())));
         return o.readObject();
-    }
-
-    public static byte[] compressObject(Object obj) throws IOException {
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        GZIPOutputStream gzipOut = new GZIPOutputStream(baos);
-        ObjectOutputStream objectOut = new ObjectOutputStream(gzipOut);
-        objectOut.writeObject(obj);
-        objectOut.close();
-        gzipOut.finish();
-
-        return baos.toByteArray();
-    }
-
-    public static Object decompressObject(byte[] obj) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream bais = new ByteArrayInputStream(obj);
-        GZIPInputStream gzipIn = new GZIPInputStream(bais);
-        ObjectInputStream objectIn = new ObjectInputStream(gzipIn);
-        Object obju = (Object) objectIn.readObject();
-        objectIn.close();
-
-        return obju;
     }
 
     public static void main(String[] args) throws Exception {
@@ -181,7 +178,7 @@ public class DocParse {
 
         LinkedHashMap<String, int[]> convertedmap = new LinkedHashMap<>();
         for(String word:map.keySet()){
-            int[] temporaryList = map.get(word).stream().mapToInt(x->x).toArray();
+            int[] temporaryList = dogap(map.get(word).stream().mapToInt(x->x).toArray());
             convertedmap.put(word, temporaryList);
         }
 
@@ -193,20 +190,17 @@ public class DocParse {
 
         // Create the InvertedIndexObject to prepare for saving, from our other objects.
         InvertedIndexObject index = new InvertedIndexObject(convertedmap, indexToLen.stream().mapToInt(x->x).toArray(), indexToDocNOConverted);
-
+        timer("(Indexer) Object Time:");
         System.out.println("(Indexer) Index object saving...");
 
-        writeDisk(index, "index");
-        writeDisk(compressObject(index),"indexc");
+        writeDisk(index, "indexU");
         writeDisk(indexToDocNOConverted, "docnos");
         writeDisk(indexToLen, "lens");
         writeDisk(convertedmap, "mapA");
-        //System.out.println(convertedmap.entrySet());
         timer("(Indexer) Saving Time:");
+
         readDisk(Path.of("index"));
         timer("(Indexer) Re-read Time:");
-        readDisk(Path.of("indexc"));
-        timer("(Indexer) Re-read Time C:");
 
 
 
