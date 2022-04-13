@@ -15,7 +15,7 @@ public class DocParse {
 
     // Start a timer
     static long startTime = System.nanoTime();
-    static final int HASH = 61;
+    static final int HASH = 199; //61
 
     /**
      * Prints off the time as of the call of the statement, relevant to the System.nanoTime() at the beginning of the
