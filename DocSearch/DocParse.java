@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Parses a specific XML document into an inverted index to be stored on disk as an InvertedIndexObject
@@ -30,36 +31,6 @@ public class DocParse {
         startTime = System.nanoTime();
     }
 
-    public static int[] dogap(int[] obj){
-        int[] in = Arrays.stream(obj).boxed().toList().stream().mapToInt(i->i).toArray();
-
-        int last = 0;
-        int[] out = new int[in.length];
-
-        for(int i = 0; i < in.length; i++) {
-            int j = in[i];
-            out[i] = j-last;
-            last=j;
-        }
-
-        return in;
-    }
-
-    public static int[] ungap(int[] obj){
-
-        int[] back = new int[obj.length];
-        int last=0;
-        for(int i = 0; i < obj.length; i++) {
-            int j = obj[i];
-            back[i] = j+last;
-            last=back[i];
-        }
-        return back;
-    }
-
-    public static void getNormal(){
-    }
-
     public static int h(String s){
         int t = 0;
         s=s.toLowerCase(Locale.ROOT);
@@ -70,6 +41,10 @@ public class DocParse {
         }
 
         return t%HASH;
+    }
+
+    public static String shaver(String content, Pattern p) {
+        return p.matcher(content).replaceAll("");
     }
 
     public static void writeDisk(Object obj, String fname){
@@ -101,6 +76,7 @@ public class DocParse {
 
         // Read all documents and delimit by words-ish
         Pattern p = Pattern.compile("\\W*\\s");
+        Pattern shaver = Pattern.compile("[^\\w+|-]+");
         Scanner s = new Scanner(new FileInputStream("wsj.xml"), StandardCharsets.UTF_8).useDelimiter(p);
 
         // Declare variables used in the following loop to store counts of documents, docnumbers, and body text.
@@ -131,7 +107,7 @@ public class DocParse {
                         if (token.charAt(0) == '<') {
                             continue;
                         }
-                        textContent.append(" ").append(token);  // Append to string our body text until end.
+                        textContent.append(" ").append(shaver(token, shaver));  // Append to string our body text until end.
 
                                                                 // I recognize this includes a leading space.
                                                                 // but this doesn't impact the index, and is easier
