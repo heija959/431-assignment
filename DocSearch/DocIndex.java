@@ -1,10 +1,8 @@
 package DocSearch;
 
+
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * Parses a specific XML document into an inverted index to be stored on disk as an InvertedIndexObject
@@ -42,10 +40,6 @@ public class DocIndex {
         return t%HASH;
     }
 
-    public static String shaver(String content, Pattern p) {
-        return p.matcher(content).replaceAll("");
-    }
-
     public static void writeDisk(Object obj, String fname){
         try
         {
@@ -61,11 +55,6 @@ public class DocIndex {
         }
     }
 
-    public static Object readDisk(Path source) throws IOException, ClassNotFoundException {
-        ObjectInputStream o = new ObjectInputStream(new BufferedInputStream(new FileInputStream(source.toFile())));
-        return o.readObject();
-    }
-
     static int occur(String[]a, String s)
     {
         int counter = 0;
@@ -78,68 +67,33 @@ public class DocIndex {
 
     public static void main(String[] args) throws Exception {
 
-        System.out.print("(Indexer) Reading XML: ");
-
-        // Declaring a list of DocObjects
         ArrayList<DocObject> docList = new ArrayList<>();
 
-        // Read all documents and delimit by words-ish
-        Pattern p = Pattern.compile("\\W*\\s");
-        Pattern shaver = Pattern.compile("[^\\w+|-]+");
-        //Pattern shaver = Pattern.compile("[^\\w+]");
-        Scanner s = new Scanner(new FileInputStream("wsj.xml"), StandardCharsets.UTF_8).useDelimiter(p);
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(System.in))) {
+            String line;
+            while ((line = in.readLine()) != null) {
 
-        // Declare variables used in the following loop to store counts of documents, docnumbers, and body text.
-        int nos = 0, docs = 0;
-        String docNo = null;
-        StringBuilder textContent = new StringBuilder();
-
-        // Reading the entire XML file...
-        while(s.hasNext()) {
-            String token = s.next().toLowerCase(Locale.ROOT);
-            if (token.charAt(0) == '<') {
-                if (token.equals("<docno")){        // Detect <DOCNO> tag.
-                    textContent = new StringBuilder();
-                    nos++;                          // Increase count of numbers.
-                    if (s.hasNext()){
-                        token = s.next().toLowerCase(Locale.ROOT);
-                        docNo = token;              // If there, the next token must be our document number.
-                        textContent.append(docNo);
+                if(line.isEmpty()){
+                    continue;
+                }
+                String[] lines = line.split(" ");
+                String docNo = null;
+                StringBuilder textContent = new StringBuilder();
+                for(String s:lines){
+                    if (s.length() > 1 && s.charAt(0) == '#') {
+                        docNo = s.substring(1);
+                    } else {
+                        textContent.append(" ");
+                        textContent.append(s);
                     }
                 }
-
-                if (token.equals("<hl")){                     // Detect body text <TEXT> tag.
-                    while (s.hasNext()){
-                        token = s.next().toLowerCase(Locale.ROOT);
-                        if (token.equals("</text")){            // Break if we detect the end of the tag.
-                            break;
-                        }
-                        if (token.charAt(0) == '<') {
-                            continue;
-                        }
-                        textContent.append(" ").append(shaver(token, shaver));  // Append to string our body text until end.
-
-                                                                // I recognize this includes a leading space.
-                                                                // but this doesn't impact the index, and is easier
-                                                                // to read.
-                    }
-                }
-                if (token.equals("</doc")){                                         // If we're end of document...
-                    DocObject test = new DocObject(textContent.toString(),docNo);
-                    docList.add(test);                                              // append a DocObject to our list.
-                    docs++;
-                }
+                DocObject test = new DocObject(textContent.toString(),docNo);
+                docList.add(test);
             }
         }
-        if (docs == nos){
-            System.out.print("Equal document numbers and documents.\n");
-        } else {
-            System.out.print("UNEQUAL document numbers and documents! This probably won't work, proceeding anyway.\n");
-        }
 
-        timer("(Indexer) Reading XML Time:");
 
-        System.out.println("(Indexer) Inverting "+docList.size()+" documents");
+        timer("(Indexer) Reading Time:");
 
         // Declare variables for inversion process.
         List<Map<String, List<int[]>>> maps = new ArrayList<>();
@@ -179,48 +133,18 @@ public class DocIndex {
 
         timer("(Indexer) Inverting Time:");
 
-        System.out.println("(Indexer) Convert to primitives...");  // ...because it's better for storage
-
-        List<LinkedHashMap<String, int[]>> convertedmaps = new ArrayList<>();
-        for (int i = 0; i < HASH; i++){
-            LinkedHashMap<String, int[]> convertedmap = new LinkedHashMap<>();
-            convertedmaps.add(convertedmap);
-        }
-
-       /* for(int i = 0; i < maps.size(); i++) {
-            for (String word : maps.get(i).keySet()) {
-                int[] temporaryList = (maps.get(i).get(word)).stream().mapToInt(x -> x).toArray();
-                convertedmaps.get(i).put(word, temporaryList);
-            }
-        }*/
-        if (maps.size() != HASH){
-            System.out.println("Halt Hash "+maps.size());
-            System.exit(130);
-        }
-
         String[] indexToDocNOConverted = indexToDocNO.toArray(new String[0]);
 
-        timer("(Indexer) Primitives Time:");
 
-        System.out.println("(Indexer) Index object creation...");
-
-        // Create the InvertedIndexObject to prepare for saving, from our other objects.
-        //InvertedIndexObject index = new InvertedIndexObject(convertedmap, indexToLen.stream().mapToInt(x->x).toArray(), indexToDocNOConverted);
         for (int i = 0; i<maps.size(); i++){
             writeDisk(maps.get(i),"index/"+i);
         }
 
-        timer("(Indexer) Object Time:");
-        System.out.println("(Indexer) Index object saving...");
-
-        //writeDisk(index, "indexU");
         writeDisk(indexToDocNOConverted, "index/docnos");
         int[] cindexToLen = indexToLen.stream().mapToInt(Integer::intValue).toArray();
         writeDisk(cindexToLen, "index/lens");
-        //writeDisk(convertedmap, "mapA");
-        timer("(Indexer) Saving Time:");
 
-        timer("(Indexer) Re-read Time:");
+        timer("Completed index: ");
 
 
 
