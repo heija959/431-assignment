@@ -5,14 +5,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Parses a specific XML document into an inverted index to be stored on disk as an InvertedIndexObject
  *
  * @author heija959
  */
-public class DocParse {
+public class DocIndex {
 
     // Start a timer
     static long startTime = System.nanoTime();
