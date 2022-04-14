@@ -2,6 +2,8 @@
 
 In this assignment we were tasked to create a search engine to process a 500mb XML file's documents, with the restraint that we should be able to search many terms and retrieve all relevant documents in at/under a second. I am hitting ~500ms, for the most part.
 
+My favourite test query is "axiomatically engaging sleep tactics, plenty wakeful panics next morning apparently."
+
 ## Building
 
 As the search suite is written in Java, building each program in the application is simple.
