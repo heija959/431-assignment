@@ -5,7 +5,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class DocSearch {
-    static final int HASH = 199;
+    static final int HASH = 397; //199
 
     public static int h(String s){
         int t = 0;
