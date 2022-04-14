@@ -54,6 +54,10 @@ public class DocObject{
         return uniqueWords;
     }
 
+    String[] getTextArr() {
+        return textContent.split(" ");
+    }
+
     /**
      * Converts all text in the document to an array of unique words.
      *

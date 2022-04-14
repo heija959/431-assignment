@@ -66,6 +66,16 @@ public class DocIndex {
         return o.readObject();
     }
 
+    static int occur(String[]a, String s)
+    {
+        int counter = 0;
+        for (String value : a)
+            if (s.equals(value))
+                counter++;
+
+        return counter;
+    }
+
     public static void main(String[] args) throws Exception {
 
         System.out.print("(Indexer) Reading XML: ");
@@ -76,6 +86,7 @@ public class DocIndex {
         // Read all documents and delimit by words-ish
         Pattern p = Pattern.compile("\\W*\\s");
         Pattern shaver = Pattern.compile("[^\\w+|-]+");
+        //Pattern shaver = Pattern.compile("[^\\w+]");
         Scanner s = new Scanner(new FileInputStream("wsj.xml"), StandardCharsets.UTF_8).useDelimiter(p);
 
         // Declare variables used in the following loop to store counts of documents, docnumbers, and body text.
@@ -85,7 +96,7 @@ public class DocIndex {
 
         // Reading the entire XML file...
         while(s.hasNext()) {
-            String token = s.next().toLowerCase(Locale.ROOT).toLowerCase(Locale.ROOT);
+            String token = s.next().toLowerCase(Locale.ROOT);
             if (token.charAt(0) == '<') {
                 if (token.equals("<docno")){        // Detect <DOCNO> tag.
                     textContent = new StringBuilder();
@@ -131,13 +142,14 @@ public class DocIndex {
         System.out.println("(Indexer) Inverting "+docList.size()+" documents");
 
         // Declare variables for inversion process.
-        List<Map<String, List<Integer>>> maps = new ArrayList<>();
+        List<Map<String, List<int[]>>> maps = new ArrayList<>();
         for (int i = 0; i < HASH; i++){
-            Map<String, List<Integer>> emptymap = new HashMap<>();
+            Map<String, List<int[]>> emptymap = new HashMap<>();
             maps.add(emptymap);
         }
         ArrayList<Integer> indexToLen = new ArrayList<>();
         ArrayList<String> indexToDocNO = new ArrayList<>();
+
 
         // For every document...
         for (int i = 0; i < docList.size(); i++){
@@ -148,17 +160,19 @@ public class DocIndex {
 
             // For all unique strings in the body text of docs...
             for (String word:docList.get(i).getUniqueText()){
-                ArrayList<Integer> temporaryList;
+                ArrayList<int[]> temporaryList;
                 int wordHash = h(word);
                 // Check if the word has occured in our Map, and if so, append to the previous postings for the word.
                 if (maps.get(wordHash).containsKey(word)){
-                    temporaryList = (ArrayList<Integer>) (maps.get(wordHash)).get(word);
+                    temporaryList = (ArrayList<int[]>) (maps.get(wordHash)).get(word);
                 }
                 else { // ...otherwise create a new list and append to that instead.
                     temporaryList = new ArrayList<>();
                 }
-
-                temporaryList.add(i);
+                int[] add = new int[2];
+                add[0] = i;
+                add[1] = occur(docList.get(i).getTextArr(), word);
+                temporaryList.add(add);
                 maps.get(wordHash).put(word, temporaryList);
             }
         }
@@ -173,14 +187,14 @@ public class DocIndex {
             convertedmaps.add(convertedmap);
         }
 
-        for(int i = 0; i < maps.size(); i++) {
+       /* for(int i = 0; i < maps.size(); i++) {
             for (String word : maps.get(i).keySet()) {
                 int[] temporaryList = (maps.get(i).get(word)).stream().mapToInt(x -> x).toArray();
                 convertedmaps.get(i).put(word, temporaryList);
             }
-        }
-        if (convertedmaps.size() != HASH){
-            System.out.println("Halt Hash "+convertedmaps.size());
+        }*/
+        if (maps.size() != HASH){
+            System.out.println("Halt Hash "+maps.size());
             System.exit(130);
         }
 
@@ -192,8 +206,8 @@ public class DocIndex {
 
         // Create the InvertedIndexObject to prepare for saving, from our other objects.
         //InvertedIndexObject index = new InvertedIndexObject(convertedmap, indexToLen.stream().mapToInt(x->x).toArray(), indexToDocNOConverted);
-        for (int i = 0; i<convertedmaps.size(); i++){
-            writeDisk(convertedmaps.get(i),"index/"+i);
+        for (int i = 0; i<maps.size(); i++){
+            writeDisk(maps.get(i),"index/"+i);
         }
 
         timer("(Indexer) Object Time:");
@@ -201,7 +215,8 @@ public class DocIndex {
 
         //writeDisk(index, "indexU");
         writeDisk(indexToDocNOConverted, "index/docnos");
-        writeDisk(indexToLen, "index/lens");
+        int[] cindexToLen = indexToLen.stream().mapToInt(Integer::intValue).toArray();
+        writeDisk(cindexToLen, "index/lens");
         //writeDisk(convertedmap, "mapA");
         timer("(Indexer) Saving Time:");
 
