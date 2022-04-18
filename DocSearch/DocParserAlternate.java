@@ -1,12 +1,14 @@
 package DocSearch;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-public class DocParser {
+public class DocParserAlternate {
 
 
     public static String shaver(String content, Pattern p) {
@@ -26,7 +28,7 @@ public class DocParser {
         Pattern p = Pattern.compile("\\W*\\s");
         Pattern shaver = Pattern.compile("[^\\w+|-]+");
         //Pattern shaver = Pattern.compile("[^\\w+]");
-        Scanner s = new Scanner(new FileInputStream("wsj.xml"), StandardCharsets.UTF_8).useDelimiter(p);
+        Scanner s = new Scanner(System.in, StandardCharsets.UTF_8).useDelimiter(p);
 
         // Declare variables used in the following loop to store counts of documents, docnumbers, and body text.
         int nos = 0, docs = 0;
@@ -34,6 +36,8 @@ public class DocParser {
         StringBuilder textContent = new StringBuilder();
 
         // Reading the entire XML file...
+
+
         while (s.hasNext()) {
             String token = s.next().toLowerCase(Locale.ROOT);
             if (token.charAt(0) == '<') {

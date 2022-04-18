@@ -19,6 +19,14 @@ As the search suite is written in Java, building each program in the application
 The parser application (DocSearch/DocParser) prints to standard output the content of documents separated by a blank line.
 On it's own, this application serves little purpose, and is designed to be used with the indexer. It does make for a pretty waterfall of text, though.
 
+Assignment specifications were not clear on how the parser should accept a file. DocSearch/DocParser will just select wsj.xml, and that selection is hard-coded in. DocSearch/DocParserAlternate will accept a file the same way DocSearch/DocSearch will; via stdin. 
+
+- DocParser: ```java DocSearch/DocParser```
+
+- DocParserAlternate: ```java DocSearch/DocParserAlternate < file.xml```
+
+I imagine DocParserAlternate to be useful when checking how familiar smaller files are parsed, such as wsj.small.xml, **but I used the regular DocParser to generate my indexes, and would much rather that program be marked instead.**
+
 ### Indexer
 
 The indexer (DocSearch/DocIndex) is built to take document content from the parser application. To create a fresh index:
