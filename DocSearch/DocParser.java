@@ -12,6 +12,8 @@ public class DocParser {
     public static String shaver(String content, Pattern p) {
 
         // As a regex replace this is slower, so these two lines are fine.
+        // We do sacrifice the words "hl" and "dd" here, but we recover the ability to search by date.
+        // I would say that searching for dates is much more important than searching for two words that aren't real.
         content = content.replace("hl"," ");
         content = content.replace("dd"," ");
 
