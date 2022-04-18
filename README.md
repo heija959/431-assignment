@@ -52,7 +52,23 @@ This does not apply to the general public, only staff marking this assignment. T
 ## Decisions/Justifications
 
 Ranking is weak and the numbers are represented uncomfortably as floats, but the information they represent is still a relevance score. I might change this. 
- 
+
+Some parsing decisions have "removed" access to certain words or ideas. I've based my parsing decisions on ensuring certain unique points of information are distinguishable: 
+- "Commercially-owned" is more useful than turning it into "commercially" and "owned" separately. As a result, If someone searches for "owned" their query is less accurate but it is now possible to search for things that are "commercially-owned" only...
+- ...context is lost however as "New York-based" becomes "new" and "york-based". Anyone with an interest in people in York will have to deal with people in New York.
+
+
+- Silliness on my part now forces "dd" and "hl" to have no results...
+- ...but we can now search by date...
+- ...and date could be 25/12/22 or 25.12.22 and yield the same result...
+- ...but it can't be 25-12-22 because of my "commercially-owned" choice.
+
+
+- "Don't" will become "dont" and therefore remain a distinct word...
+- ...but if we're searching for "John's" things, there is no way to filter out "johns" of Johns Hopkins fame. 
+
+The list could go on.
+
 I have decided to hash words into respective sub-indexes, and reading index portions by hashing the terms. I understand this is "hacking" and constitutes a circumvention of ideas expressed in lectures... 
 
 ...but is it a circumvention? The mechanism of using a dictionary to store the location of in an index is the same as knowing the location of such a term via hash, but in a blurrier ways. 
