@@ -82,7 +82,8 @@ public class DocIndex {
                 for(String s:lines){
                     if (s.length() > 1 && s.charAt(0) == '#') {
                         docNo = s.substring(1);
-                        textContent.append(s.substring(1));
+                        textContent.append(" ");
+                        textContent.append(docNo);
                     } else {
                         textContent.append(" ");
                         textContent.append(s);
