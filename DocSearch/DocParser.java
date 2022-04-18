@@ -10,6 +10,11 @@ public class DocParser {
 
 
     public static String shaver(String content, Pattern p) {
+
+        // As a regex replace this is slower, so these two lines are fine.
+        content = content.replace("hl"," ");
+        content = content.replace("dd"," ");
+
         return p.matcher(content).replaceAll("");
     }
 
@@ -19,7 +24,7 @@ public class DocParser {
         Pattern p = Pattern.compile("\\W*\\s");
         Pattern shaver = Pattern.compile("[^\\w+|-]+");
         //Pattern shaver = Pattern.compile("[^\\w+]");
-        Scanner s = new Scanner(new FileInputStream("wsj.xml"), StandardCharsets.UTF_8).useDelimiter(p);
+        Scanner s = new Scanner(new FileInputStream("wsj.small.xml"), StandardCharsets.UTF_8).useDelimiter(p);
 
         // Declare variables used in the following loop to store counts of documents, docnumbers, and body text.
         int nos = 0, docs = 0;
