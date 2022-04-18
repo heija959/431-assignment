@@ -62,7 +62,7 @@ public class DocParser {
                     }
                 }
                 if (token.equals("</doc")) {                                         // If we're end of document...
-                    System.out.println("#"+docNo+" "+textContent+"\n");
+                    System.out.println("#"+textContent+"\n");
 
                     docs++;
                 }
